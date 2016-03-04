@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <script data-require="jquery@*" data-semver="2.2.0" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css"/>
+    <!-- <script type="text/javascript" src="marked/lib/marked.js"></script> -->
+    <script type="text/javascript" src="marked.js"></script>
+    <script type="text/javascript" src= "script.js"></script>
+  </head>
+
+  <body>
+
+
+  <div class="container">
+     <div class="left">
+        <h2 class="title">Type your markdown here:</h2>
+
+        <textarea id="md" class="text-area">
+        </textarea>   
+     </div>
+     <div class="center">
+         <button onclick="parseMD()">Generate</button> 
+     </div>
+     <div class="right">
+        <h2 class="title">Preview:</h2>
+        <div id="preview"></div>     
+     </div> 
+  </div>
+    
+  </body>
+
+</html>

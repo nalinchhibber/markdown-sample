@@ -1,0 +1,37 @@
+.title{
+    background-color: #000;
+    color: #fff;
+    text-align: center;	
+}
+
+.text-area{
+	width: 95%;
+	height: 200px;
+    display: block;
+    margin: 0 auto;
+}
+
+.container{
+	width:100%;
+	height:100%;
+	margin:0 auto;
+}
+
+.container .left{
+	width:45%;
+	float:left;
+	border: 2px solid black;
+	min-height: 300px;
+}
+.container .center{
+	width:7%;
+	float:left;
+	text-align: center;
+	margin-top: 50px
+}
+.container .right{
+	width:45%;
+	float:left;
+	border: 2px solid black;
+	min-height: 300px;
+}
