@@ -452,7 +452,7 @@ var inline = {
   autolink: /^<([^ >]+(@|:\/)[^ >]+)>/,
   url: noop,
   tag: /^<!--[\s\S]*?-->|^<\/?\w+(?:"[^"]*"|'[^']*'|[^'">])*?>/,
-  link: /^!?\[(inside)\]\(href\)/,
+  link: /^!?\[(inside)\]\(href\)(\[(type)\])?/,
   reflink: /^!?\[(inside)\]\s*\[([^\]]*)\]/,
   nolink: /^!?\[((?:\[[^\]]*\]|[^\[\]])*)\]/,
   strong: /^__([\s\S]+?)__(?!_)|^\*\*([\s\S]+?)\*\*(?!\*)/,
@@ -465,10 +465,12 @@ var inline = {
 
 inline._inside = /(?:\[[^\]]*\]|[^\[\]]|\](?=[^\[]*\]))*/;
 inline._href = /\s*<?([\s\S]*?)>?(?:\s+['"]([\s\S]*?)['"])?\s*/;
+inline._type = /(?:\[[^\]]*\]|[^\[\]]|\](?=[^\[]*\]))*/;
 
 inline.link = replace(inline.link)
   ('inside', inline._inside)
   ('href', inline._href)
+  ('type', inline._type)
   ();
 
 inline.reflink = replace(inline.reflink)
@@ -621,7 +623,8 @@ InlineLexer.prototype.output = function(src) {
       this.inLink = true;
       out += this.outputLink(cap, {
         href: cap[2],
-        title: cap[3]
+        title: cap[1],
+        type: cap[5]
       });
       this.inLink = false;
       continue;
@@ -701,14 +704,19 @@ InlineLexer.prototype.output = function(src) {
 
 InlineLexer.prototype.outputLink = function(cap, link) {
   var href = escape(link.href)
-    , title = link.title ? escape(link.title) : null;
+    , title = link.title ? escape(link.title) : null
+    , type = link.type ? escape(link.type) : null;
 
   if (cap[0].charAt(0) === '!') {
-     var videos = ['webm', 'mp4', 'mov'];
-     var filetype = href.split('.').pop();
-     if (videos.indexOf(filetype) > -1) {
-       return this.renderer.video(href, title, escape(cap[1]), filetype);
-     } else {
+    if(type && type === 'video'){
+      var filetype = href.split('.').pop();
+      return this.renderer.video(href, title, escape(cap[1]), filetype);
+    }
+    else if(type && type === 'audio'){
+      var filetype = href.split('.').pop();
+      return this.renderer.audio(href, title, escape(cap[1]), filetype);
+    }
+    else if(!type || type === 'image'){
        return this.renderer.image(href, title, escape(cap[1]));
      }
    }
@@ -906,11 +914,18 @@ Renderer.prototype.image = function(href, title, text) {
 };
 
 Renderer.prototype.video = function (href, title, text, type) {
-   var out = '<video autoplay loop alt="'+ text + '">'
+   var out = '<video controls alt="'+ text + '">'
              + '  <source src="' + href + '" type="video/' + type + '">'
              + '</video>'
    return out
- };
+};
+
+Renderer.prototype.audio = function (href, title, text, type) {
+   var out = '<audio controls alt="'+ text + '">'
+             + '  <source src="' + href + '" type="audio/' + type + '">'
+             + '</audio>'
+   return out
+};
 
 Renderer.prototype.text = function(text) {
   return text;
